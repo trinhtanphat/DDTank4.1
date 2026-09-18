@@ -1,0 +1,37 @@
+name: Terrain character settle gate
+
+on:
+  pull_request:
+    paths:
+      - "Source Server/Game.Logic/**"
+      - "tests/terrain-character-settle-smoke.ps1"
+      - ".github/workflows/terrain-character-settle-gate.yml"
+  workflow_dispatch:
+
+jobs:
+  terrain-settle:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Run terrain settle smoke
+        shell: powershell
+        run: ./tests/terrain-character-settle-smoke.ps1
+
+      - name: Build Game.Logic
+        shell: powershell
+        run: msbuild ".\Source Server\Game.Logic\Game.Logic.csproj" /t:Build /p:Configuration=Release /m /v:minimal
+
+      - name: Upload Game.Logic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terrain-settle-gamelogic-v41
+          path: |
+            Source Server/Game.Logic/bin/Release/Game.Logic.dll
+            Source Server/Game.Logic/bin/Release/Game.Logic.pdb
+          if-no-files-found: error
