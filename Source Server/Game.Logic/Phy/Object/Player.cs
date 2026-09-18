@@ -1593,46 +1593,16 @@ namespace Game.Logic.Phy.Object
             this.m_game.AddAction((IAction)new GhostMoveAction(this, new Point(this.X + point.X, this.Y + point.Y)));
         }
 
-        public override void StartMoving()
+                public override void StartMoving()
         {
-            if (this.m_map == null)
-                return;
-            Point notEmptyPointDown = this.m_map.FindYLineNotEmptyPointDown(this.m_x, this.m_y);
-            if (notEmptyPointDown.IsEmpty)
-            {
-                if (this.m_map.Ground != null)
-                    this.m_y = this.m_map.Ground.Height;
-            }
-            else
-            {
-                this.m_x = notEmptyPointDown.X;
-                this.m_y = notEmptyPointDown.Y;
-            }
-            if (!notEmptyPointDown.IsEmpty)
-                return;
-            this.m_syncAtTime = false;
-            this.Die();
+            if (this.m_map != null)
+                base.StartMoving(0, 30);
         }
 
-        public override void StartMoving(int delay, int speed)
+                public override void StartMoving(int delay, int speed)
         {
-            if (this.m_map == null)
-                return;
-            Point notEmptyPointDown = this.m_map.FindYLineNotEmptyPointDown(this.m_x, this.m_y);
-            if (notEmptyPointDown.IsEmpty)
-            {
-                this.m_y = this.m_map.Ground.Height;
-            }
-            else
-            {
-                this.m_x = notEmptyPointDown.X;
-                this.m_y = notEmptyPointDown.Y;
-            }
-            base.StartMoving(delay, speed);
-            if (!notEmptyPointDown.IsEmpty)
-                return;
-            this.m_syncAtTime = false;
-            this.Die();
+            if (this.m_map != null)
+                base.StartMoving(delay, speed);
         }
 
         public void StartRotate(int rotation, int speed, string endPlay, int delay)
