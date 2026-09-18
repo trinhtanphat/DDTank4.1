@@ -43,7 +43,7 @@ namespace Game.Logic.Actions
         protected override void ExecuteImp(BaseGame game, long tick)
     {
       int previousTargetY = this.m_toY;
-      Point landing = game.Map.FindYLineNotEmptyPointDown(this.m_toX, this.m_living.Y);
+      var landing = game.Map.FindYLineNotEmptyPointDown(this.m_toX, this.m_living.Y);
       int authoritativeY = landing.IsEmpty ? game.Map.Bound.Height + 1 : landing.Y;
       if (authoritativeY >= this.m_living.Y)
         this.m_toY = authoritativeY;
