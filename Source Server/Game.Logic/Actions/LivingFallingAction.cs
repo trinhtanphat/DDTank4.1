@@ -40,29 +40,36 @@ namespace Game.Logic.Actions
       this.m_callback = callback;
     }
 
-    protected override void ExecuteImp(BaseGame game, long tick)
+        protected override void ExecuteImp(BaseGame game, long tick)
     {
-      if (!this.m_isSent)
+      int previousTargetY = this.m_toY;
+      var landing = game.Map.FindYLineNotEmptyPointDown(this.m_toX, this.m_living.Y);
+      int authoritativeY = landing.IsEmpty ? game.Map.Bound.Height + 1 : landing.Y;
+      if (authoritativeY >= this.m_living.Y)
+        this.m_toY = authoritativeY;
+
+      if (!this.m_isSent || previousTargetY != this.m_toY)
       {
         this.m_isSent = true;
         game.SendLivingFall(this.m_living, this.m_toX, this.m_toY, this.m_fallSpeed, this.m_action, this.m_type);
       }
-      if (this.m_toY > this.m_living.Y + this.m_fallSpeed)
+
+      int step = this.m_fallSpeed > 0 ? this.m_fallSpeed : 1;
+      if (this.m_toY > this.m_living.Y + step)
       {
-        this.m_living.SetXY(this.m_toX, this.m_living.Y + this.m_fallSpeed);
+        this.m_living.SetXY(this.m_toX, this.m_living.Y + step);
+        return;
       }
-      else
+
+      this.m_living.SetXY(this.m_toX, this.m_toY);
+      if (game.Map.IsOutMap(this.m_toX, this.m_toY))
       {
-        this.m_living.SetXY(this.m_toX, this.m_toY);
-        if (game.Map.IsOutMap(this.m_toX, this.m_toY))
-        {
-          this.m_living.SyncAtTime = false;
-          this.m_living.Die();
-        }
-        if (this.m_callback != null)
-          this.m_living.CallFuction(this.m_callback, 0);
-        this.Finish(tick);
+        this.m_living.SyncAtTime = false;
+        this.m_living.Die();
       }
+      if (this.m_callback != null)
+        this.m_living.CallFuction(this.m_callback, 0);
+      this.Finish(tick);
     }
   }
 }
